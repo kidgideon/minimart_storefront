@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/:storeId",
+      "destination": "/:storeId"
+    },
+    {
+      "source": "/:storeId/product/:id",
+      "destination": "/:storeId/product/:id"
+    }
+  ]
+}
