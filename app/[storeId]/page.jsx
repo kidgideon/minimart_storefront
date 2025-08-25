@@ -1,7 +1,7 @@
 // app/[storeId]/page.jsx
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-import StorefrontClient from "./StorefrontClient"; // NEW client wrapper
+import StorefrontClient from "./StoreFrontClient"; // NEW client wrapper
 
 const DEFAULT_PRIMARY = "#1C2230";
 const DEFAULT_SECONDARY = "#43B5F4";
