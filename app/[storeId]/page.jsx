@@ -4,6 +4,7 @@ import StorefrontClient from "./StoreFrontClient";
 const DEFAULT_PRIMARY = "#1C2230";
 const DEFAULT_SECONDARY = "#43B5F4";
 
+// --- Fetch Store Data from Backend ---
 async function fetchStoreData(storeId) {
   try {
     const res = await fetch(
@@ -13,14 +14,12 @@ async function fetchStoreData(storeId) {
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
-    console.error("Error fetching store data:", err);
     return null;
   }
 }
 
 // --- SEO Metadata ---
 export async function generateMetadata({ params }) {
-  // Await params
   const resolvedParams = await params;
   const storeId = resolvedParams.storeId;
 
@@ -30,6 +29,7 @@ export async function generateMetadata({ params }) {
     return {
       title: "Store Not Found",
       description: "This store could not be found.",
+      metadataBase: new URL("https://minimart.ng"),
     };
   }
 
@@ -38,6 +38,7 @@ export async function generateMetadata({ params }) {
   return {
     title: `${biz.businessName} | Minimart`,
     description: biz.description || "Shop amazing products and services",
+    metadataBase: new URL("https://minimart.ng"), // Ensures OG/Twitter URLs resolve correctly
     openGraph: {
       title: biz.businessName,
       description: biz.description || "",
@@ -55,7 +56,6 @@ export async function generateMetadata({ params }) {
 
 // --- Storefront Page ---
 export default async function StorefrontPage({ params }) {
-  // ✅ Await params here too
   const resolvedParams = await params;
   const storeId = resolvedParams.storeId;
 
