@@ -13,8 +13,7 @@ async function fetchProductData(storeId, productId) {
       { cache: "no-store" } // Always fetch fresh for SEO
     );
     if (!res.ok) return null;
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (err) {
     console.error("Error fetching product data:", err);
     return null;
@@ -23,7 +22,9 @@ async function fetchProductData(storeId, productId) {
 
 // --- SEO Metadata ---
 export async function generateMetadata({ params }) {
-  const { storeId, id } = params;
+  const resolvedParams = await params;
+  const { storeId, id } = resolvedParams;
+
   const data = await fetchProductData(storeId, id);
 
   if (!data || !data.business || !data.product) {
@@ -35,31 +36,32 @@ export async function generateMetadata({ params }) {
 
   const { business, product } = data;
   const image = product.images?.[0] || "/default-product.jpg";
-
-  return {
+return {
+  title: `${product.name} | ${business.businessName}`,
+  description: product.description || `Discover ${product.name} on Minimart`,
+  openGraph: {
     title: `${product.name} | ${business.businessName}`,
-    description: product.description || `Discover ${product.name} on Minimart`,
-    openGraph: {
-      title: `${product.name} | ${business.businessName}`,
-      description: product.description || "",
-      url: `https://${storeId}.minimart.ng/${storeId}/product/${product._ft === "product" ? product.prodId : product.serviceId}`,
-      images: [image],
-      type: "product",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${product.name} | ${business.businessName}`,
-      description: product.description || "",
-      images: [image],
-    },
-  };
+    description: product.description || "",
+    url: `https://${storeId}.minimart.ng/product/${product._ft === "product" ? product.prodId : product.serviceId}`,
+    images: [image],
+    type: "website", // <-- change from "product" to "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${product.name} | ${business.businessName}`,
+    description: product.description || "",
+    images: [image],
+  },
+};
+
 }
 
 // --- Product Page ---
 export default async function ProductPage({ params }) {
-  const { storeId, id } = params;
-  const data = await fetchProductData(storeId, id);
+  const resolvedParams = await params;
+  const { storeId, id } = resolvedParams;
 
+  const data = await fetchProductData(storeId, id);
   if (!data || !data.business || !data.product) return notFound();
 
   const { business, product } = data;

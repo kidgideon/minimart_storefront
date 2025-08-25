@@ -1,18 +1,17 @@
 // app/[storeId]/page.jsx
-import StorefrontClient from "./StoreFrontClient"; // Your existing client-side component
+import StorefrontClient from "./StoreFrontClient";
 
 const DEFAULT_PRIMARY = "#1C2230";
 const DEFAULT_SECONDARY = "#43B5F4";
 
-// --- Fetch Store Data from Backend ---
 async function fetchStoreData(storeId) {
   try {
-    const res = await fetch(`https://minimart-backend.vercel.app/store?storeId=${storeId}`, {
-      cache: "no-store", // or "force-cache" if you want caching
-    });
+    const res = await fetch(
+      `https://minimart-backend.vercel.app/store?storeId=${storeId}`,
+      { cache: "no-store" }
+    );
     if (!res.ok) return null;
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (err) {
     console.error("Error fetching store data:", err);
     return null;
@@ -21,10 +20,13 @@ async function fetchStoreData(storeId) {
 
 // --- SEO Metadata ---
 export async function generateMetadata({ params }) {
-  const { storeId } = params;
+  // Await params
+  const resolvedParams = await params;
+  const storeId = resolvedParams.storeId;
+
   const data = await fetchStoreData(storeId);
 
-  if (!data || !data.biz) {
+  if (!data?.biz) {
     return {
       title: "Store Not Found",
       description: "This store could not be found.",
@@ -53,12 +55,12 @@ export async function generateMetadata({ params }) {
 
 // --- Storefront Page ---
 export default async function StorefrontPage({ params }) {
-  const { storeId } = params;
-  const data = await fetchStoreData(storeId);
+  // ✅ Await params here too
+  const resolvedParams = await params;
+  const storeId = resolvedParams.storeId;
 
-  if (!data || !data.biz) {
-    return <div>Store not found</div>;
-  }
+  const data = await fetchStoreData(storeId);
+  if (!data?.biz) return <div>Store not found</div>;
 
   const { biz } = data;
   const primary = biz.customTheme?.primaryColor?.trim() || DEFAULT_PRIMARY;
