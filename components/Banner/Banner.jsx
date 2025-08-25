@@ -1,7 +1,7 @@
 "use client"; // Required since it uses useEffect & state
 
 import { useEffect, useState } from "react";
-import styles from "./banner.module.css";
+import styles from "./Banner.module.css";
 import { db } from "../../lib/firebase"; // Adjusted for Next.js alias
 import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image"; // Next.js image optimization

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./latest.module.css";
+import styles from "./Latest.module.css";
 import ProductCard from "../productCard/productCard"
 import { db } from "../../lib/firebase"; // adjust if needed
 import { doc, getDoc } from "firebase/firestore";

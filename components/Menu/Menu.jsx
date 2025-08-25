@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { db } from "../../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import styles from "./menu.module.css";
+import styles from "./Menu.module.css";
 import { toast } from "sonner";
 
 const Menu = ({ storeId }) => {
