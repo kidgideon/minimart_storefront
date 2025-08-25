@@ -1,93 +1,80 @@
-// app/[storeId]/product/[id]/page.js
-import Head from "next/head";
+// app/[storeId]/product/[id]/page.jsx
+import ProductPageClient from "./ProductPageClient";
 import { notFound } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../../../lib/firebase";
-import ProductPageClient from "./ProductPageClient"; // Client-side component
-import fallback from "../../../../public/images/no_bg.png";
 
 const DEFAULT_PRIMARY = "#1C2230";
 const DEFAULT_SECONDARY = "#43B5F4";
 
-// Helper: Convert Firestore data to plain JSON (fixes Timestamp issue)
-function serializeFirestore(docData) {
-  return JSON.parse(
-    JSON.stringify(docData, (key, value) => {
-      if (value?.seconds !== undefined && value?.nanoseconds !== undefined) {
-        return new Date(value.seconds * 1000 + value.nanoseconds / 1e6).toISOString();
-      }
-      return value;
-    })
-  );
+// --- Fetch Product Data from Backend ---
+async function fetchProductData(storeId, productId) {
+  try {
+    const res = await fetch(
+      `https://minimart-backend.vercel.app/product/${storeId}/${productId}`,
+      { cache: "no-store" } // Always fetch fresh for SEO
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Error fetching product data:", err);
+    return null;
+  }
 }
 
-export default async function ProductPage({ params }) {
+// --- SEO Metadata ---
+export async function generateMetadata({ params }) {
   const { storeId, id } = params;
+  const data = await fetchProductData(storeId, id);
 
-  // --- Fetch business data ---
-  const bizRef = doc(db, "businesses", storeId);
-  const bizSnap = await getDoc(bizRef);
-  if (!bizSnap.exists()) notFound();
-
-  const biz = serializeFirestore(bizSnap.data());
-
-  // --- Extract store colors ---
-  const primary = biz.customTheme?.primaryColor?.trim() || DEFAULT_PRIMARY;
-  const secondary = biz.customTheme?.secondaryColor?.trim() || DEFAULT_SECONDARY;
-
-  // --- Find product or service ---
-  let product = (biz.products || []).find((p) => p.prodId === id);
-  if (product) {
-    product._ft = "product";
-  } else {
-    product = (biz.services || []).find((s) => s.serviceId === id);
-    if (product) product._ft = "service";
+  if (!data || !data.business || !data.product) {
+    return {
+      title: "Product Not Found",
+      description: "This product could not be found.",
+    };
   }
 
-  if (!product) notFound();
+  const { business, product } = data;
+  const image = product.images?.[0] || "/default-product.jpg";
 
-  const image = product.images?.[0] || fallback;
+  return {
+    title: `${product.name} | ${business.businessName}`,
+    description: product.description || `Discover ${product.name} on Minimart`,
+    openGraph: {
+      title: `${product.name} | ${business.businessName}`,
+      description: product.description || "",
+      url: `https://${storeId}.minimart.ng/${storeId}/product/${product._ft === "product" ? product.prodId : product.serviceId}`,
+      images: [image],
+      type: "product",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} | ${business.businessName}`,
+      description: product.description || "",
+      images: [image],
+    },
+  };
+}
+
+// --- Product Page ---
+export default async function ProductPage({ params }) {
+  const { storeId, id } = params;
+  const data = await fetchProductData(storeId, id);
+
+  if (!data || !data.business || !data.product) return notFound();
+
+  const { business, product } = data;
+
+  // Default colors if missing
+  const primary = business.primaryColor?.trim() || DEFAULT_PRIMARY;
+  const secondary = business.secondaryColor?.trim() || DEFAULT_SECONDARY;
 
   return (
-    <>
-      <Head>
-        <title>{product.name} | {biz.businessName}</title>
-        <meta
-          name="description"
-          content={product.description || "Explore this product on Minimart."}
-        />
-        <meta
-          property="og:title"
-          content={`${product.name} | ${biz.businessName}`}
-        />
-        <meta
-          property="og:description"
-          content={product.description || ""}
-        />
-        <meta property="og:image" content={image} />
-        <meta property="og:type" content="product" />
-        <meta
-          property="og:url"
-          content={`https://${storeId}.minimart.ng/product/${product._ft === "product" ? product.prodId : product.serviceId}`}
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={product.name} />
-        <meta name="twitter:description" content={product.description || ""} />
-        <meta name="twitter:image" content={image} />
-        <link
-          rel="icon"
-          type="image/png"
-          href={biz.customTheme?.logo || fallback}
-        />
-      </Head>
-
-      <ProductPageClient
-        storeId={storeId}
-        biz={biz}
-        product={product}
-        primaryColor={primary}
-        secondaryColor={secondary}
-      />
-    </>
+    <ProductPageClient
+      storeId={storeId}
+      biz={business}
+      product={product}
+      primaryColor={primary}
+      secondaryColor={secondary}
+    />
   );
 }

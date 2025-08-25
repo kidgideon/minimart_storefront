@@ -1,37 +1,37 @@
 // app/[storeId]/page.jsx
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../lib/firebase";
-import StorefrontClient from "./StoreFrontClient"; // NEW client wrapper
+import StorefrontClient from "./StoreFrontClient"; // Your existing client-side component
 
 const DEFAULT_PRIMARY = "#1C2230";
 const DEFAULT_SECONDARY = "#43B5F4";
 
-// --- Helper: Serialize Firestore Data ---
-function serializeFirestoreData(data) {
-  if (!data) return null;
-
-  return JSON.parse(
-    JSON.stringify(data, (key, value) => {
-      // Convert Firestore Timestamps to ISO strings
-      if (value && value.seconds !== undefined && value.nanoseconds !== undefined) {
-        return new Date(value.seconds * 1000 + value.nanoseconds / 1e6).toISOString();
-      }
-      return value;
-    })
-  );
+// --- Fetch Store Data from Backend ---
+async function fetchStoreData(storeId) {
+  try {
+    const res = await fetch(`https://minimart-backend.vercel.app/store?storeId=${storeId}`, {
+      cache: "no-store", // or "force-cache" if you want caching
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Error fetching store data:", err);
+    return null;
+  }
 }
 
-// --- SEO for Storefront ---
+// --- SEO Metadata ---
 export async function generateMetadata({ params }) {
   const { storeId } = params;
-  const bizRef = doc(db, "businesses", storeId);
-  const bizSnap = await getDoc(bizRef);
+  const data = await fetchStoreData(storeId);
 
-  if (!bizSnap.exists()) {
-    return { title: "Store Not Found" };
+  if (!data || !data.biz) {
+    return {
+      title: "Store Not Found",
+      description: "This store could not be found.",
+    };
   }
 
-  const biz = serializeFirestoreData(bizSnap.data());
+  const { biz } = data;
 
   return {
     title: `${biz.businessName} | Minimart`,
@@ -40,14 +40,13 @@ export async function generateMetadata({ params }) {
       title: biz.businessName,
       description: biz.description || "",
       url: `https://${storeId}.minimart.ng`,
-      images: [biz.customTheme.logo || "/default-store.jpg"],
-      type: "website",
+      images: [biz.customTheme?.logo || "/default-store.jpg"],
     },
     twitter: {
       card: "summary_large_image",
       title: biz.businessName,
       description: biz.description || "",
-      images: [biz.customTheme.logo || "/default-store.jpg"],
+      images: [biz.customTheme?.logo || "/default-store.jpg"],
     },
   };
 }
@@ -55,14 +54,13 @@ export async function generateMetadata({ params }) {
 // --- Storefront Page ---
 export default async function StorefrontPage({ params }) {
   const { storeId } = params;
-  const bizRef = doc(db, "businesses", storeId);
-  const bizSnap = await getDoc(bizRef);
+  const data = await fetchStoreData(storeId);
 
-  if (!bizSnap.exists()) {
+  if (!data || !data.biz) {
     return <div>Store not found</div>;
   }
 
-  const biz = serializeFirestoreData(bizSnap.data());
+  const { biz } = data;
   const primary = biz.customTheme?.primaryColor?.trim() || DEFAULT_PRIMARY;
   const secondary = biz.customTheme?.secondaryColor?.trim() || DEFAULT_SECONDARY;
 
