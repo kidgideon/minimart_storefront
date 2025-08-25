@@ -1,6 +1,8 @@
 // app/[storeId]/page.jsx
 import StorefrontClient from "./StoreFrontClient";
 
+export const dynamic = "force-dynamic"; // Ensures server-rendered at request time
+
 const DEFAULT_PRIMARY = "#1C2230";
 const DEFAULT_SECONDARY = "#43B5F4";
 
@@ -13,16 +15,14 @@ async function fetchStoreData(storeId) {
     );
     if (!res.ok) return null;
     return await res.json();
-  } catch (err) {
+  } catch {
     return null;
   }
 }
 
 // --- SEO Metadata ---
 export async function generateMetadata({ params }) {
-  const resolvedParams = await params;
-  const storeId = resolvedParams.storeId;
-
+  const storeId = params.storeId;
   const data = await fetchStoreData(storeId);
 
   if (!data?.biz) {
@@ -56,9 +56,7 @@ export async function generateMetadata({ params }) {
 
 // --- Storefront Page ---
 export default async function StorefrontPage({ params }) {
-  const resolvedParams = await params;
-  const storeId = resolvedParams.storeId;
-
+  const storeId = params.storeId;
   const data = await fetchStoreData(storeId);
   if (!data?.biz) return <div>Store not found</div>;
 
