@@ -2,29 +2,35 @@
 import { NextResponse } from 'next/server'
 
 export function middleware(req) {
-  const url = req.nextUrl
+  const url = req.nextUrl.clone()
   const host = req.headers.get('host') || ''
 
-  // Extract storeId from subdomain or custom domain
-  let storeId = ''
-
-  // Handle minimart subdomains (e.g., store123.minimart.ng)
-  if (host.endsWith('.minimart.ng')) {
-    storeId = host.split('.')[0] // "store123"
-  } else {
-    // For custom domains like jenniferglow.com, the domain itself is the storeId
-    storeId = host.split(':')[0] // remove port if present
-  }
-
-  // Prevent rewriting for Next.js system routes (_next, api, etc.)
+  // Skip middleware for Next.js system and API routes
   if (
     url.pathname.startsWith('/_next') ||
     url.pathname.startsWith('/api') ||
     url.pathname.startsWith('/favicon') ||
-    url.pathname.includes('.')
+    url.pathname.includes('.') // static files like images
   ) {
     return NextResponse.next()
   }
+
+  // Ignore only the main platform domain (not stores)
+  const platformDomains = ['minimart.ng', 'www.minimart.ng']
+  if (platformDomains.includes(host)) {
+    return NextResponse.next()
+  }
+
+  // Extract storeId from subdomain or custom domain
+  let storeId = ''
+  if (host.endsWith('.minimart.ng')) {
+    storeId = host.split('.')[0] // e.g., campusicon
+  } else {
+    // For custom domains: take the part before the first dot
+    storeId = host.replace(/^www\./, '').split('.')[0] // e.g., jenniferglow.com → jenniferglow
+  }
+
+  if (!storeId) return NextResponse.next() // No rewrite if storeId is missing
 
   // Rewrite root `/` → `/{storeId}`
   if (url.pathname === '/') {
