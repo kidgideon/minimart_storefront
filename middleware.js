@@ -1,29 +1,42 @@
 // middleware.js
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
 export function middleware(req) {
-  const url = req.nextUrl.clone();
-  const host = req.headers.get("host") || "";
+  const url = req.nextUrl
+  const host = req.headers.get('host') || ''
 
-  // Ignore localhost dev (use path-based during local dev)
-  const isLocalhost = host.includes("localhost");
-  const baseDomain = "minimart.ng"; // your main domain
-  const subdomain = host.replace(`.${baseDomain}`, "");
+  // Extract storeId from subdomain or custom domain
+  let storeId = ''
 
-  // Skip middleware for API routes, static files, etc.
+  // Handle minimart subdomains (e.g., store123.minimart.ng)
+  if (host.endsWith('.minimart.ng')) {
+    storeId = host.split('.')[0] // "store123"
+  } else {
+    // For custom domains like jenniferglow.com, the domain itself is the storeId
+    storeId = host.split(':')[0] // remove port if present
+  }
+
+  // Prevent rewriting for Next.js system routes (_next, api, etc.)
   if (
-    url.pathname.startsWith("/_next") ||
-    url.pathname.startsWith("/api") ||
-    url.pathname.includes(".")
+    url.pathname.startsWith('/_next') ||
+    url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/favicon') ||
+    url.pathname.includes('.')
   ) {
-    return NextResponse.next();
+    return NextResponse.next()
   }
 
-  // Handle subdomain mapping (only on production domain)
-  if (!isLocalhost && subdomain && subdomain !== baseDomain) {
-    url.pathname = `/${subdomain}${url.pathname}`;
-    return NextResponse.rewrite(url);
+  // Rewrite root `/` → `/{storeId}`
+  if (url.pathname === '/') {
+    url.pathname = `/${storeId}`
+    return NextResponse.rewrite(url)
   }
 
-  return NextResponse.next();
+  // Rewrite `/product/:id` → `/{storeId}/product/:id`
+  if (url.pathname.startsWith('/product/')) {
+    url.pathname = `/${storeId}${url.pathname}`
+    return NextResponse.rewrite(url)
+  }
+
+  return NextResponse.next()
 }
