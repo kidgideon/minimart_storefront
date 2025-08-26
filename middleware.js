@@ -15,7 +15,7 @@ export function middleware(req) {
     return NextResponse.next()
   }
 
-  // Ignore only the main platform domain (not stores)
+  // Ignore main platform domains
   const platformDomains = ['minimart.ng', 'www.minimart.ng']
   if (platformDomains.includes(host)) {
     return NextResponse.next()
@@ -24,22 +24,40 @@ export function middleware(req) {
   // Extract storeId from subdomain or custom domain
   let storeId = ''
   if (host.endsWith('.minimart.ng')) {
-    storeId = host.split('.')[0] // e.g., campusicon
+    storeId = host.split('.')[0] // e.g., campusicon.minimart.ng → campusicon
   } else {
-    // For custom domains: take the part before the first dot
+    // For custom domains
     storeId = host.replace(/^www\./, '').split('.')[0] // e.g., jenniferglow.com → jenniferglow
   }
 
-  if (!storeId) return NextResponse.next() // No rewrite if storeId is missing
+  if (!storeId) return NextResponse.next() // No rewrite if storeId missing
 
-  // Rewrite root `/` → `/{storeId}`
+  // --- Root `/` → `/{storeId}` ---
   if (url.pathname === '/') {
     url.pathname = `/${storeId}`
     return NextResponse.rewrite(url)
   }
 
-  // Rewrite `/product/:id` → `/{storeId}/product/:id`
+  // --- Product page `/product/:id` → `/{storeId}/product/:id` ---
   if (url.pathname.startsWith('/product/')) {
+    url.pathname = `/${storeId}${url.pathname}`
+    return NextResponse.rewrite(url)
+  }
+
+  // --- Cart page `/cart` → `/{storeId}/cart` ---
+  if (url.pathname === '/cart') {
+    url.pathname = `/${storeId}/cart`
+    return NextResponse.rewrite(url)
+  }
+
+  // --- Checkout page `/checkout/:orderId` → `/{storeId}/checkout/:orderId` ---
+  if (url.pathname.startsWith('/checkout/')) {
+    url.pathname = `/${storeId}${url.pathname}`
+    return NextResponse.rewrite(url)
+  }
+
+  // --- Order page `/order/:orderId` → `/{storeId}/order/:orderId` ---
+  if (url.pathname.startsWith('/order/')) {
     url.pathname = `/${storeId}${url.pathname}`
     return NextResponse.rewrite(url)
   }
