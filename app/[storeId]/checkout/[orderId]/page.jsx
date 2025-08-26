@@ -1,5 +1,5 @@
 // app/[storeId]/checkout/[orderId]/page.jsx
-import CheckoutClient from "./CheckoutClient";
+import CheckoutClient from "./checkoutClient";
 
 export async function generateMetadata({ params }) {
   const { storeId, orderId } = params;
