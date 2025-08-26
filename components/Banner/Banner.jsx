@@ -1,11 +1,11 @@
-"use client"; // Required since it uses useEffect & state
+"use client";
 
 import { useEffect, useState } from "react";
 import styles from "./Banner.module.css";
-import { db } from "../../lib/firebase"; // Adjusted for Next.js alias
+import { db } from "../../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import Image from "next/image"; // Next.js image optimization
-import fallbackBanner from "../../public/images/banner.jpeg"; // Place this in /public/images/banner.jpeg
+import Image from "next/image";
+import fallbackBanner from "../../public/images/banner.jpeg";
 
 const Banner = ({ storeId }) => {
   const [bannerData, setBannerData] = useState(null);
@@ -65,7 +65,8 @@ const Banner = ({ storeId }) => {
     );
   }
 
-  const bannerImage = bannerData?.image || {fallbackBanner}; // Using /public folder
+  // Choose banner image (fallback if missing)
+  const bannerImage = bannerData?.image || fallbackBanner;
 
   return (
     <div className={styles.bannerWrapper}>
@@ -73,8 +74,8 @@ const Banner = ({ storeId }) => {
         <Image
           src={bannerImage}
           alt="store banner"
-          layout="fill"
-          objectFit="cover"
+          fill // replaces layout="fill"
+          style={{ objectFit: "cover" }} // replaces objectFit="cover"
           priority
         />
         {bannerData?.darkOverlay !== false && (

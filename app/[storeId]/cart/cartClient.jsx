@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
@@ -10,12 +11,12 @@ import Products from "../../../components/Products/Products";
 import Services from "../../../components/Services/Services";
 import Footer from "../../../components/Footer/Footer";
 
-import useStoreTheme from "../../../hooks/useStoreTheme"; // ensure path is correct
-
+import useStoreTheme from "../../../hooks/useStoreTheme"; 
 import styles from "./page.module.css";
 
 const DEFAULT_PRIMARY = "#1C2230";
 const DEFAULT_SECONDARY = "#43B5F4";
+const DEFAULT_IMAGE = "/images/no_bg.png"; // fallback image
 
 const applyThemeToRoot = (primary, secondary) => {
   document.documentElement.style.setProperty("--storePrimary", primary || DEFAULT_PRIMARY);
@@ -25,24 +26,28 @@ const applyThemeToRoot = (primary, secondary) => {
 export default function CartClient({ storeId }) {
   const router = useRouter();
   const { biz, loading, error } = useStoreTheme(storeId);
+
   const [cartItems, setCartItems] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
 
   const cartKey = `cart_${storeId}`;
 
+  // redirect if storeId missing
   useEffect(() => {
     if (!storeId) router.push("/");
   }, [storeId, router]);
 
+  // Apply theme and load cart after biz is ready
   useEffect(() => {
     if (biz) {
       const primary = biz.customTheme?.primaryColor?.trim() || DEFAULT_PRIMARY;
       const secondary = biz.customTheme?.secondaryColor?.trim() || DEFAULT_SECONDARY;
       applyThemeToRoot(primary, secondary);
-      loadCartData(biz); // Only load cart after biz is ready
+      loadCartData(biz);
     }
   }, [biz]);
 
+  // Handle errors
   useEffect(() => {
     if (error) {
       toast.error("Failed to load store.");
@@ -50,6 +55,7 @@ export default function CartClient({ storeId }) {
     }
   }, [error, router]);
 
+  // Load cart from localStorage
   const loadCartData = (bizData) => {
     const cart = JSON.parse(localStorage.getItem(cartKey)) || {};
     if (!Object.keys(cart).length) {
@@ -68,19 +74,21 @@ export default function CartClient({ storeId }) {
         const found = allItems.find((i) =>
           i._ft === "product" ? i.prodId === id : i.serviceId === id
         );
-        return found ? { ...found, quantity: qty } : null;
+        if (!found) return null;
+        return { ...found, quantity: qty };
       })
       .filter(Boolean);
 
     setCartItems(itemsInCart);
 
     const total = itemsInCart.reduce(
-      (sum, item) => sum + (item.price || 0) * item.quantity,
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
       0
     );
     setSubtotal(total);
   };
 
+  // Update quantity in cart
   const updateCartQuantity = (id, change) => {
     let cart = JSON.parse(localStorage.getItem(cartKey)) || {};
     cart[id] = (cart[id] || 0) + change;
@@ -97,6 +105,7 @@ export default function CartClient({ storeId }) {
     if (biz) loadCartData(biz);
   };
 
+  // Proceed to checkout
   const handleCheckout = () => {
     const checkoutKey = `checkout_${storeId}`;
     const cart = JSON.parse(localStorage.getItem(cartKey)) || {};
@@ -135,35 +144,39 @@ export default function CartClient({ storeId }) {
       <div className={styles.cartItems}>
         {cartItems.length > 0 ? (
           <>
-            {cartItems.map((item) => {
+            {cartItems.map((item, idx) => {
               const id = item._ft === "product" ? item.prodId : item.serviceId;
+              const safeKey = id || item.name || idx;
+              const quantity = item.quantity || 1;
+              const imageSrc = item.images?.[0] || DEFAULT_IMAGE;
+
               return (
-                <div key={id} className={styles.item}>
+                <div key={safeKey} className={styles.item}>
                   <div className={styles.top}>
                     <div className={styles.itemImage}>
-                      <img src={item.images?.[0]} alt={item.name} />
+                      <img src={imageSrc} alt={item.name || "item"} />
                     </div>
                     <div className={styles.itemInfo}>
                       <div className={styles.itemDetails}>
-                        <div className={styles.itemName}>{item.name}</div>
-                        <div className={styles.itemDescription}>{item.description}</div>
-                        <div className={styles.itemCategory}>{item.category}</div>
+                        <div className={styles.itemName}>{item.name || "Unnamed Item"}</div>
+                        <div className={styles.itemDescription}>{item.description || ""}</div>
+                        <div className={styles.itemCategory}>{item.category || ""}</div>
                       </div>
                     </div>
                     <div className={styles.priceArea}>
-                      ₦{(item.price * item.quantity).toLocaleString()}
+                      ₦{((item.price || 0) * quantity).toLocaleString()}
                     </div>
                   </div>
 
                   <div className={styles.bottom}>
                     <div className={styles.remove}>
-                      <button onClick={() => updateCartQuantity(id, -item.quantity)}>
+                      <button onClick={() => updateCartQuantity(id, -quantity)}>
                         <i className="fa-solid fa-trash"></i> Remove
                       </button>
                     </div>
                     <div className={styles.cartToggle}>
                       <button onClick={() => updateCartQuantity(id, -1)}>–</button>
-                      <p className={styles.quantity}>{item.quantity}</p>
+                      <p className={styles.quantity}>{quantity}</p>
                       <button onClick={() => updateCartQuantity(id, 1)}>+</button>
                     </div>
                   </div>
@@ -189,7 +202,7 @@ export default function CartClient({ storeId }) {
         ) : (
           <div className={styles.cartEmpty}>
             <div><i className="fa-solid fa-cart-shopping"></i></div>
-            <p>cart is empty</p>
+            <p>Cart is empty</p>
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 // app/[storeId]/page.jsx
 import StorefrontClient from "./StoreFrontClient";
+import DEFAULT_LOGO from "../../public/images/no_bg.png";
 
 export const dynamic = "force-dynamic"; // Ensures server-rendered at request time
 
@@ -15,12 +16,13 @@ async function fetchStoreData(storeId) {
     );
     if (!res.ok) return null;
     return await res.json();
-  } catch {
+  } catch (err) {
+    console.error("Failed to fetch store data:", err);
     return null;
   }
 }
 
-// --- SEO Metadata ---
+// --- SEO Metadata with favicon ---
 export async function generateMetadata({ params }) {
   const storeId = params.storeId;
   const data = await fetchStoreData(storeId);
@@ -30,26 +32,37 @@ export async function generateMetadata({ params }) {
       title: "Store Not Found",
       description: "This store could not be found.",
       metadataBase: new URL("https://minimart.ng"),
+      icons: {
+        icon: DEFAULT_LOGO,
+        shortcut: DEFAULT_LOGO,
+        apple: DEFAULT_LOGO,
+      },
     };
   }
 
   const { biz } = data;
+  const logo = biz.logo || DEFAULT_LOGO;
 
   return {
     title: `${biz.businessName} | Minimart`,
     description: biz.description || "Shop amazing products and services",
-    metadataBase: new URL("https://minimart.ng"), // Ensures OG/Twitter URLs resolve correctly
+    metadataBase: new URL("https://minimart.ng"),
+    icons: {
+      icon: logo,
+      shortcut: logo,
+      apple: logo,
+    },
     openGraph: {
       title: biz.businessName,
       description: biz.description || "",
       url: `https://${storeId}.minimart.ng`,
-      images: [biz.customTheme?.logo || "/default-store.jpg"],
+      images: [logo],
     },
     twitter: {
       card: "summary_large_image",
       title: biz.businessName,
       description: biz.description || "",
-      images: [biz.customTheme?.logo || "/default-store.jpg"],
+      images: [logo],
     },
   };
 }
@@ -58,11 +71,14 @@ export async function generateMetadata({ params }) {
 export default async function StorefrontPage({ params }) {
   const storeId = params.storeId;
   const data = await fetchStoreData(storeId);
+
   if (!data?.biz) return <div>Store not found</div>;
 
   const { biz } = data;
-  const primary = biz.customTheme?.primaryColor?.trim() || DEFAULT_PRIMARY;
-  const secondary = biz.customTheme?.secondaryColor?.trim() || DEFAULT_SECONDARY;
+
+  // Use biz colors directly, fallback to defaults
+  const primary = (biz.primaryColor || DEFAULT_PRIMARY).trim();
+  const secondary = (biz.secondaryColor || DEFAULT_SECONDARY).trim();
 
   return (
     <StorefrontClient
