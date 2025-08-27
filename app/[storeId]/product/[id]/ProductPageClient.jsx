@@ -9,6 +9,7 @@ const Featured = dynamic(() => import("../../../../components/Featured/Featured"
 const Products = dynamic(() => import("../../../../components/Products/Products"), { ssr: false });
 const Services = dynamic(() => import("../../../../components/Services/Services"), { ssr: false });
 const Footer = dynamic(() => import("../../../../components/Footer/Footer"), { ssr: false });
+const Messenger = dynamic(() => import("../../../../components/Messenger/Messenger"), { ssr: false });
 const ProductDetailClient = dynamic(() => import("../../../../components/productDetail/ProductDetailClient"), { ssr: false });
 
 export default function ProductPageClient({ storeId, biz, product, primaryColor, secondaryColor}) {
@@ -18,6 +19,7 @@ export default function ProductPageClient({ storeId, biz, product, primaryColor,
         "--storeSecondary": secondaryColor,
       }} className={styles.wrapper}>
       <Navbar storeId={storeId} />
+      <Messenger storeId={storeId}/>
       <ProductDetailClient storeId={storeId} product={product} biz={biz} />
       <Featured storeId={storeId} />
       <Products storeId={storeId} />

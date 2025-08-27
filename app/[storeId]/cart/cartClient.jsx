@@ -10,6 +10,7 @@ import Featured from "../../../components/Featured/Featured";
 import Products from "../../../components/Products/Products";
 import Services from "../../../components/Services/Services";
 import Footer from "../../../components/Footer/Footer";
+import Messenger from "../../../components/Messenger/Messenger";
 
 import useStoreTheme from "../../../hooks/useStoreTheme"; 
 import styles from "./page.module.css";
@@ -140,6 +141,7 @@ export default function CartClient({ storeId }) {
   return (
     <div className={styles.cartArea}>
       <Navbar storeId={storeId} />
+      <Messenger storeId={storeId}/>
 
       <div className={styles.cartItems}>
         {cartItems.length > 0 ? (

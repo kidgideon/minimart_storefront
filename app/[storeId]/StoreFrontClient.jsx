@@ -12,6 +12,7 @@ const Products = dynamic(() => import("../../components/Products/Products"), { s
 const Services = dynamic(() => import("../../components/Services/Services"), { ssr: false });
 const Footer = dynamic(() => import("../../components/Footer/Footer"), { ssr: false });
 const TrackOrder = dynamic(() => import("../../components/trackOrder/trackOrder"), { ssr: false });
+const Messenger = dynamic(() => import("../../components/Messenger/Messenger"), { ssr: false });
 
 export default function StorefrontClient({ storeId, biz, primary, secondary }) {
   return (
@@ -22,6 +23,7 @@ export default function StorefrontClient({ storeId, biz, primary, secondary }) {
       }} className={styles.storeInterface}
     >
       <Navbar storeId={storeId} />
+      <Messenger storeId={storeId} />
       <Banner storeId={storeId} />
        <TrackOrder storeId={storeId}/>
       <Featured storeId={storeId} />

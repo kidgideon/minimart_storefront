@@ -5,6 +5,7 @@ import Head from "next/head";
 import { useRouter, useParams } from "next/navigation"; // FIXED
 import Receipt from "../../../../components/Reciept/Reciept";
 import Navbar from "../../../../components/Navbar/Navbar";
+import Messenger from "../../../../components/Messenger/Messenger";
 import styles from "./page.module.css";
 import useStoreTheme from "../../../../hooks/useStoreTheme";
 
@@ -183,6 +184,7 @@ const Order = () => {
       </Head>
 
       <Navbar storeId={storeId} />
+      <Messenger storeId={storeId}/>
 
       {orderSaved && paymentStatus === "paid" ? (
         <Receipt storeId={storeId} orderId={orderId} showInfo={true} status={paymentStatus} />

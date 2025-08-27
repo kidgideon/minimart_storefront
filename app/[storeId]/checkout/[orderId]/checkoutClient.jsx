@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Navbar from "../../../../components/Navbar/Navbar";
+import Messenger from "../../../../components/Messenger/Messenger";
 import Footer from "../../../../components/Footer/Footer";
 import styles from "./page.module.css";
 import useStoreTheme from "../../../../hooks/useStoreTheme";
@@ -125,6 +126,7 @@ export default function CheckoutClient({ storeId, orderId}) {
   return (
     <div className={styles.checkoutInterface}>
       <Navbar storeId={storeId} />
+      <Messenger storeId={storeId}/>
 
       <div className={styles.warningTemplate}>
         Please fill in your shipment details and pay securely online. Payment is instant and automatic.

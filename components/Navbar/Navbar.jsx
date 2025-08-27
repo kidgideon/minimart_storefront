@@ -129,13 +129,15 @@ export default function Navbar({ storeId }) {
   return (
     <div className={styles.navbarInterface}>
       <div className={styles.companyArea}>
-        <div className={styles.imageDiv}>
-          {loadingBiz ? (
-            <i className="fa-solid fa-spinner fa-spin" />
-          ) : (
-            <Image src={logoSrc} alt="store logo" width={50} height={50} />
-          )}
-        </div>
+       <div className={styles.imageDiv}>
+  {loadingBiz ? (
+    <i className="fa-solid fa-spinner fa-spin" />
+  ) : (
+    <Link href={`/${storeId}`}>
+  <Image src={logoSrc} alt="store logo" width={50} height={50} />
+</Link>
+  )}
+</div>
         <p className={styles.storeName}>{displayName}</p>
       </div>
 
