@@ -23,11 +23,11 @@ export default function StorefrontClient({ storeId, biz, primary, secondary }) {
     >
       <Navbar storeId={storeId} />
       <Banner storeId={storeId} />
+       <TrackOrder storeId={storeId}/>
       <Featured storeId={storeId} />
       <Latest storeId={storeId} />
       <Products storeId={storeId} />
       <Services storeId={storeId} />
-        <TrackOrder storeId={storeId}/>
       <Footer storeId={storeId} />
     </div>
   );
