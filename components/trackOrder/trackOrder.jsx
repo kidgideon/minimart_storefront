@@ -40,7 +40,7 @@ const TrackOrder = ({ storeId }) => {
       }
 
       // Navigate to the order page
-      router.push(`/${storeId}/order/${orderId.trim()}`);
+      router.push(`/order/${orderId.trim()}`);
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong");
