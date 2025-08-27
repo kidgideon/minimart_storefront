@@ -1,0 +1,192 @@
+{
+  "businessEmail": "kofigideon065@gmail.com",
+  "businessId": "campusicon",
+  "businessName": "Campus icon",
+  "createdAt": "2025-07-30T16:13:56+01:00",
+
+  "credits": 0,
+
+  "currencySymbol": "₦",
+  
+  "customTheme": {
+     "logo": "https://firebasestorage.googleapis.com/v0/b/minimart-web.firebasestorage.app/o/logos%2Fcampusicon?alt=media&token=dc05405f-d868-4c11-a5c2-f92910fadc05",
+  "primaryColor": "#014b6a",
+  "secondaryColor": "#00b0bd"
+  },
+
+  "featured": [
+    {
+      "dateAdded": "2025-08-22T07:12:16.053Z",
+      "id": "prod6857996140",
+      "type": "product"
+    },
+    {
+      "dateAdded": "2025-08-21T10:52:44.813Z",
+      "id": "prod1909500178",
+      "type": "product"
+    },
+    {
+      "dateAdded": "2025-08-16T09:42:46.580Z",
+      "id": "svc1158071195",
+      "type": "service"
+    }
+  ],
+
+  "instagramLink": "https://thusvshsshsbsbshsj",
+  "tikTokLink": "https://mytiktok",
+   "whatsappNumber": "07046578294",
+  "youtubeLink": "https://myyoutube",
+  
+  "layoutThemes": {
+    "midBannerOne": {
+      "align": "left",
+      "darkOverlay": true,
+      "display": true,
+      "image": "",
+      "mainText": "all for free",
+      "subText": "super sublime"
+    },
+    "midBannerTwo": {
+      "image": "",
+      "mainText": "",
+      "subText": ""
+    },
+    "topBanner": {
+      "align": "center",
+      "darkOverlay": true,
+      "extraText": "",
+      "image": "https://firebasestorage.googleapis.com/v0/b/minimart-web.firebasestorage.app/o/banners%2Fcampusicon%2Fbanner_1756276594976_ba8bb2b94b2db3a874620b089d6ffb16.jpg?alt=media&token=411788b5-cbbb-4b46-8772-f3fe2d27450a",
+      "mainText": "THINK IT THEN DO IT ",
+      "subText": "Shop class "
+    }
+  },
+
+
+  "notifications": [
+    {
+      "date": "2025-07-30T15:13:56.751Z",
+      "link": "/settings",
+      "read": false,
+      "text": "Welcome to Minimart! Start by customizing your storefront."
+    },
+    {
+      "date": "2025-08-08T07:18:28.738Z",
+      "link": "/orders",
+      "read": false,
+      "text": "New order mnrt78c1e2d65e has been placed"
+    }
+  ],
+
+
+  "orders": [
+    {
+      "date": "2025-08-21T04:53:34.871Z",
+      "orderId": "mnrt397deb1f8d"
+    },
+    {
+      "date": "2025-08-21T17:56:14.720Z",
+      "orderId": "mnrt49c0044596"
+    }
+  ],
+
+
+  "otherInfo": {
+    "description": "Your sure plug for Thrift wears ",
+    "openingHours": {
+      "from": "00:00",
+      "to": "00:00",
+      "phoneNumber": "07046578294"
+    },
+
+    "shippingInformation": "Any around yenagoa and Portharcourt (1500)",
+    "storeLocation": "Yenagoa, Bayelsa state",
+    "ownerName": "kofi gideon",
+    "ownerUid": "BBatYsrsJKUiizyxehSdkzALU8F2"
+  },
+  "pageViews": [
+    {
+      "date": "2025-08-27T00:00:00+01:00",
+      "views": 32
+    }
+  ],
+
+  "plan": {
+    "dateStarted": "2025-07-30T15:13:56.751Z",
+    "plan": "pro"
+  },
+
+
+  "products": [
+    {
+      "availability": true,
+      "category": "Male vests",
+      "dateAdded": "2025-08-21T19:12:59.641Z",
+      "description": "Male vest , very lovely pattern and standard",
+      "featured": false,
+      "images": [
+        "https://firebasestorage.googleapis.com/v0/b/minimart-web.firebasestorage.app/o/products%2FBBatYsrsJKUiizyxehSdkzALU8F2%2F1755803569620_0_3b1f1424696fdce33b2e175a67896e4f.jpg?alt=media&token=5feb102d-fb35-4e27-9e80-c4feed7ff5b0",
+        "https://firebasestorage.googleapis.com/v0/b/minimart-web.firebasestorage.app/o/products%2FBBatYsrsJKUiizyxehSdkzALU8F2%2F1755803575040_1_4dd09e7f0aae1b2e4838081f18a0fe55.jpg?alt=media&token=eb342ce9-95c5-4ad3-88b6-309043022492",
+        "https://firebasestorage.googleapis.com/v0/b/minimart-web.firebasestorage.app/o/products%2FBBatYsrsJKUiizyxehSdkzALU8F2%2F1755803576528_2_13b42b77f56165e415d099a8988a2639.jpg?alt=media&token=3ff1d7f0-ba15-4104-aa82-3e6c490de33e"
+      ],
+      "likes": 2,
+      "name": "Male vest",
+      "price": 25000,
+      "prodId": "prod5324704817",
+      "views": 15
+    }
+  ],
+
+  "salesArray": [],
+
+  "searchedFor": [],
+
+
+  "services": [
+    {
+      "bookable": true,
+      "category": "saloon",
+      "dateAdded": "2025-08-07T07:21:17.734Z",
+      "description": "Cutting your hair",
+      "duration": "4 hours",
+      "featured": false,
+      "images": [
+        "https://firebasestorage.googleapis.com/v0/b/minimart-web.firebasestorage.app/o/services%2FBBatYsrsJKUiizyxehSdkzALU8F2%2F1754551271358_0_download%20(3).jpeg?alt=media&token=1bab89e2-d04b-4c92-a3e4-018be23eeeb1"
+      ],
+      "likes": 2,
+      "name": "Hair cut 2x sharper",
+      "price": 31000,
+      "serviceId": "svc1158071195",
+      "views": 22
+    }
+  ],
+
+
+  "storeCurrency": "Naira",
+
+  "storeLike": 9,
+
+  "subAccount": {
+    "account_name": "GIDEON EBEDA-OWEI KOFI",
+    "account_number": "7046578294",
+    "active": true,
+    "bank": 169,
+    "business_name": "campusicon",
+    "createdAt": "2025-08-19T10:28:26.123Z",
+    "currency": "NGN",
+    "domain": "live",
+    "id": 1433430,
+    "integration": 1552060,
+    "is_verified": false,
+    "managed_by_integration": 1552060,
+    "migrate": false,
+    "percentage_charge": 1,
+    "product": "collection",
+    "settlement_bank": "PalmPay",
+    "settlement_schedule": "AUTO",
+    "subaccount_code": "ACCT_x8gne9vb95dhw4m",
+    "updatedAt": "2025-08-19T10:28:26.123Z"
+  },
+
+  "verified": false,
+  "viewedPage": []
+}

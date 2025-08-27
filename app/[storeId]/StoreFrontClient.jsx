@@ -6,12 +6,12 @@ import dynamic from "next/dynamic";
 // Import client components dynamically
 const Navbar = dynamic(() => import("../../components/Navbar/Navbar"), { ssr: false });
 const Banner = dynamic(() => import("../../components/Banner/Banner"), { ssr: false });
-const Menu = dynamic(() => import("../../components/Menu/Menu"), { ssr: false });
 const Featured = dynamic(() => import("../../components/Featured/Featured"), { ssr: false });
 const Latest = dynamic(() => import("../../components/Latest/Latest"), { ssr: false });
 const Products = dynamic(() => import("../../components/Products/Products"), { ssr: false });
 const Services = dynamic(() => import("../../components/Services/Services"), { ssr: false });
 const Footer = dynamic(() => import("../../components/Footer/Footer"), { ssr: false });
+const TrackOrder = dynamic(() => import("../../components/trackOrder/trackOrder"), { ssr: false });
 
 export default function StorefrontClient({ storeId, biz, primary, secondary }) {
   return (
@@ -23,11 +23,11 @@ export default function StorefrontClient({ storeId, biz, primary, secondary }) {
     >
       <Navbar storeId={storeId} />
       <Banner storeId={storeId} />
-      <Menu storeId={storeId} />
       <Featured storeId={storeId} />
       <Latest storeId={storeId} />
       <Products storeId={storeId} />
       <Services storeId={storeId} />
+        <TrackOrder storeId={storeId}/>
       <Footer storeId={storeId} />
     </div>
   );

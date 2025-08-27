@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "../../lib/firebase"; // adjust path if needed
+import { db } from "../../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import styles from "./Footer.module.css";
 
@@ -28,56 +28,117 @@ const Footer = ({ storeId }) => {
   if (!business) return null;
 
   const {
-    businessName,
-    description,
-    storeLocation,
+    businessName = "Our Store",
+    otherInfo = {},
+    instagramLink,
+    tikTokLink,
+    whatsappNumber,
+    youtubeLink,
     businessEmail,
-    mainContactPlatform,
-    mainContactValue,
-    otherInfo,
   } = business;
+
+  const renderValue = (val) => {
+    if (typeof val === "object") {
+      return Object.entries(val).map(([k, v]) => (
+        <span key={k} className={styles.nestedItem}>
+          <b>{k}:</b> {v}{" "}
+        </span>
+      ));
+    }
+    return val;
+  };
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.section}>
-        <h3>{businessName}</h3>
-        {description && <p>{description}</p>}
-        {storeLocation && (
-          <p>
-            <i className="fa-solid fa-location-dot"></i> {storeLocation}
-          </p>
-        )}
-      </div>
 
-      <div className={styles.section}>
-        {businessEmail && (
-          <p>
-            <i className="fa-solid fa-envelope"></i> {businessEmail}
-          </p>
-        )}
-        {mainContactPlatform && mainContactValue && (
-          <p>
-            <i className="fa-solid fa-comment-dots"></i> {mainContactPlatform}:{" "}
-            {mainContactValue}
-          </p>
-        )}
-      </div>
+      {/* Top Section */}
+      <div className={styles.topSection}>
+        <div className={styles.about}>
+  <h3>{businessName || "Our Store"}</h3>
 
-      {otherInfo && Object.keys(otherInfo).length > 0 && (
-        <div className={styles.section}>
-          <h4>More Info</h4>
-          <ul className={styles.otherList}>
-            {Object.entries(otherInfo).map(([key, val]) => (
-              <li key={key}>
-                <b>{key}</b>: {val}
-              </li>
-            ))}
-          </ul>
+  {/* Description with fallback */}
+  <p>
+    {otherInfo?.description
+      ? otherInfo.description
+      : "We are dedicated to providing quality products and services to all our customers."}
+  </p>
+
+  {/* Location with fallback */}
+  <p>
+    <i className="fa-solid fa-location-dot"></i>{" "}
+    {otherInfo?.storeLocation || "Serving customers across various locations."}
+  </p>
+</div>
+
+        <div className={styles.contact}>
+          {businessEmail && (
+            <p>
+              <i className="fa-solid fa-envelope"></i> {businessEmail}
+            </p>
+          )}
+          {whatsappNumber && (
+            <p>
+              <i className="fa-brands fa-whatsapp"></i>{" "}
+              <a
+                href={`https://wa.me/${whatsappNumber.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Message us on WhatsApp
+              </a>
+            </p>
+          )}
+
+          <div className={styles.socialIcons}>
+            {instagramLink && (
+              <a href={instagramLink} target="_blank" rel="noopener noreferrer">
+                <i className="fa-brands fa-instagram"></i>
+              </a>
+            )}
+            {tikTokLink && (
+              <a href={tikTokLink} target="_blank" rel="noopener noreferrer">
+                <i className="fa-brands fa-tiktok"></i>
+              </a>
+            )}
+            {youtubeLink && (
+              <a href={youtubeLink} target="_blank" rel="noopener noreferrer">
+                <i className="fa-brands fa-youtube"></i>
+              </a>
+            )}
+          </div>
         </div>
-      )}
 
+     <div className={styles.info}>
+ 
+  <ul className={styles.otherList}>
+    {/* Shipping Information */}
+    <p>
+      <b>Shipping:</b>{" "}
+      {otherInfo?.shippingInformation
+        ? otherInfo.shippingInformation
+        : "We deliver to your location. Contact us for details."}
+    </p>
+
+    {/* Opening Hours */}
+    <p>
+      <b>Opening Hours:</b>{" "}
+      {otherInfo?.openingHours
+        ? otherInfo.openingHours.from === "00:00" &&
+          otherInfo.openingHours.to === "00:00"
+          ? "Open 24 hours"
+          : `${otherInfo.openingHours.from} - ${otherInfo.openingHours.to}`
+        : "open 24 hours"}
+    </p>
+  </ul>
+</div>
+
+      </div>
+
+      {/* Bottom Section */}
       <div className={styles.bottomNote}>
-        &copy; {new Date().getFullYear()} {businessName} | Powered by Minimart
+        <p>
+          &copy; {new Date().getFullYear()} {businessName}. All rights reserved
+        </p>
       </div>
     </footer>
   );
