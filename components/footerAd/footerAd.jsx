@@ -6,23 +6,23 @@ const FooterAd = () => {
     const container = document.getElementById("footer-ad");
     if (!container) return;
 
-    // Script with ad options
+    // Script with ad options (updated)
     const script1 = document.createElement("script");
     script1.type = "text/javascript";
     script1.innerHTML = `
       atOptions = {
-        'key' : 'eb4a0c929da4e79c21ea23e9c20e001f',
+        'key' : 'f07020e3bdae136b043dbec62cea641f',
         'format' : 'iframe',
-        'height' : 60,
-        'width' : 468,
+        'height' : 50,
+        'width' : 320,
         'params' : {}
       };
     `;
 
-    // Script to load the ad
+    // Script to load the ad (updated)
     const script2 = document.createElement("script");
     script2.type = "text/javascript";
-    script2.src = "//www.highperformanceformat.com/eb4a0c929da4e79c21ea23e9c20e001f/invoke.js";
+    script2.src = "//www.highperformanceformat.com/f07020e3bdae136b043dbec62cea641f/invoke.js";
 
     // Append both to the container instead of body
     container.appendChild(script1);
@@ -40,10 +40,10 @@ const FooterAd = () => {
         margin: "20px 0",
         width: "100%",
         display: "flex",
-        justifyContent: "center"
+        justifyContent: "center",
       }}
     >
-      <div id="footer-ad"></div>
+      <div id="footer-ad" style={{ width: "320px", height: "50px" }}></div>
     </div>
   );
 };
