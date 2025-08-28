@@ -1,10 +1,10 @@
-"use client"; // because it uses localStorage, window, and Firebase listeners
+"use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { doc, onSnapshot, updateDoc, getDoc } from "firebase/firestore";
-import { db } from "../../lib/firebase"; // Adjusted import for Next.js alias
+import { doc, onSnapshot, updateDoc, getDoc, Timestamp } from "firebase/firestore";
+import { db } from "../../lib/firebase";
 import Image from "next/image";
-import defaultLogo from "../../public/images/no_bg.png"; // place your image in public/images or import as asset
+import defaultLogo from "../../public/images/no_bg.png";
 import styles from "./Navbar.module.css";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -13,7 +13,7 @@ function useLocalCartCount(storeId) {
   const storageKey = `cart_${storeId}`;
 
   const parseCart = () => {
-    if (typeof window === "undefined") return 0; // SSR guard
+    if (typeof window === "undefined") return 0;
     try {
       const raw = localStorage.getItem(storageKey);
       if (!raw) return 0;
@@ -67,13 +67,9 @@ export default function Navbar({ storeId }) {
 
   const cartCount = useLocalCartCount(storeId);
   const localLikeKey = `liked_store_${storeId}`;
+  const localVisitKey = `lastVisited_${storeId}`;
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem(localLikeKey)) {
-      setLikedStore(true);
-    }
-  }, [localLikeKey]);
-
+  // Fetch business data
   useEffect(() => {
     if (!storeId) return;
     setLoadingBiz(true);
@@ -91,6 +87,13 @@ export default function Navbar({ storeId }) {
     );
     return () => unsub();
   }, [storeId]);
+
+  // Track likes
+  useEffect(() => {
+    if (typeof window !== "undefined" && localStorage.getItem(localLikeKey)) {
+      setLikedStore(true);
+    }
+  }, [localLikeKey]);
 
   const toggleStoreLike = async () => {
     if (likedStore) return;
@@ -115,6 +118,7 @@ export default function Navbar({ storeId }) {
     }
   };
 
+  // Animate cart badge
   useEffect(() => {
     if (cartCount <= 0) return;
     setBadgeKey((prev) => prev + 1);
@@ -123,21 +127,74 @@ export default function Navbar({ storeId }) {
     return () => clearTimeout(t);
   }, [cartCount]);
 
+  // Track daily page views using Firestore Timestamps
+  useEffect(() => {
+    if (!storeId || typeof window === "undefined") return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayKey = today.toISOString().split("T")[0];
+    const lastVisited = localStorage.getItem(localVisitKey);
+
+    if (lastVisited === todayKey) return;
+
+    const updatePageViews = async () => {
+      try {
+        const bizRef = doc(db, "businesses", storeId);
+        const snap = await getDoc(bizRef);
+        if (!snap.exists()) return;
+
+        const data = snap.data();
+        const pageViews = data.pageViews || [];
+
+        const todayIndex = pageViews.findIndex((entry) => {
+          if (!entry.date) return false;
+          let entryDate;
+          if (entry.date.toDate) {
+            // Firestore Timestamp
+            entryDate = entry.date.toDate();
+          } else {
+            // Fallback if plain string
+            entryDate = new Date(entry.date);
+          }
+          entryDate.setHours(0, 0, 0, 0);
+          return entryDate.getTime() === today.getTime();
+        });
+
+        if (todayIndex >= 0) {
+          pageViews[todayIndex].views = (pageViews[todayIndex].views || 0) + 1;
+        } else {
+          pageViews.push({
+            views: 1,
+            date: Timestamp.now(),
+          });
+        }
+
+        await updateDoc(bizRef, { pageViews });
+        localStorage.setItem(localVisitKey, todayKey);
+      } catch (err) {
+        console.error("Error updating page views:", err);
+      }
+    };
+
+    updatePageViews();
+  }, [storeId, localVisitKey]);
+
   const displayName = business?.businessName || storeId;
   const logoSrc = business?.customTheme?.logo || defaultLogo;
 
   return (
     <div className={styles.navbarInterface}>
       <div className={styles.companyArea}>
-       <div className={styles.imageDiv}>
-  {loadingBiz ? (
-    <i className="fa-solid fa-spinner fa-spin" />
-  ) : (
-    <Link href={`/${storeId}`}>
-  <Image src={logoSrc} alt="store logo" width={50} height={50} />
-</Link>
-  )}
-</div>
+        <div className={styles.imageDiv}>
+          {loadingBiz ? (
+            <i className="fa-solid fa-spinner fa-spin" />
+          ) : (
+            <Link href={`/${storeId}`}>
+              <Image src={logoSrc} alt="store logo" width={50} height={50} />
+            </Link>
+          )}
+        </div>
         <p className={styles.storeName}>{displayName}</p>
       </div>
 
