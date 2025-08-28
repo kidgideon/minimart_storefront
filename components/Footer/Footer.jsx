@@ -32,43 +32,33 @@ const Footer = ({ storeId }) => {
     otherInfo = {},
     instagramLink,
     tikTokLink,
+    facebookLink,
     whatsappNumber,
     youtubeLink,
     businessEmail,
   } = business;
 
-  const renderValue = (val) => {
-    if (typeof val === "object") {
-      return Object.entries(val).map(([k, v]) => (
-        <span key={k} className={styles.nestedItem}>
-          <b>{k}:</b> {v}{" "}
-        </span>
-      ));
-    }
-    return val;
-  };
-
   return (
     <footer className={styles.footer}>
-
       {/* Top Section */}
       <div className={styles.topSection}>
         <div className={styles.about}>
-  <h3>{businessName || "Our Store"}</h3>
+          <h3>{businessName || "Our Store"}</h3>
 
-  {/* Description with fallback */}
-  <p>
-    {otherInfo?.description
-      ? otherInfo.description
-      : "We are dedicated to providing quality products and services to all our customers."}
-  </p>
+          {/* Description with fallback */}
+          <p>
+            {otherInfo?.description
+              ? otherInfo.description
+              : "We are dedicated to providing quality products and services to all our customers."}
+          </p>
 
-  {/* Location with fallback */}
-  <p>
-    <i className="fa-solid fa-location-dot"></i>{" "}
-    {otherInfo?.storeLocation || "Serving customers across various locations."}
-  </p>
-</div>
+          {/* Location with fallback */}
+          <p>
+            <i className="fa-solid fa-location-dot"></i>{" "}
+            {otherInfo?.storeLocation ||
+              "Serving customers across various locations."}
+          </p>
+        </div>
 
         <div className={styles.contact}>
           {businessEmail && (
@@ -76,7 +66,8 @@ const Footer = ({ storeId }) => {
               <i className="fa-solid fa-envelope"></i> {businessEmail}
             </p>
           )}
-          {whatsappNumber && (
+
+          {whatsappNumber && whatsappNumber.trim() && (
             <p>
               <i className="fa-brands fa-whatsapp"></i>{" "}
               <a
@@ -90,54 +81,80 @@ const Footer = ({ storeId }) => {
           )}
 
           <div className={styles.socialIcons}>
-            {instagramLink && (
-              <a href={instagramLink} target="_blank" rel="noopener noreferrer">
+            {instagramLink?.trim() && (
+              <a
+                href={instagramLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fa-brands fa-instagram"></i>
               </a>
             )}
-            {tikTokLink && (
-              <a href={tikTokLink} target="_blank" rel="noopener noreferrer">
+
+            {tikTokLink?.trim() && (
+              <a
+                href={tikTokLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fa-brands fa-tiktok"></i>
               </a>
             )}
-            {youtubeLink && (
-              <a href={youtubeLink} target="_blank" rel="noopener noreferrer">
+
+            {facebookLink?.trim() && (
+              <a
+                href={facebookLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="fa-brands fa-facebook"></i>
+              </a>
+            )}
+
+            {youtubeLink?.trim() && (
+              <a
+                href={youtubeLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fa-brands fa-youtube"></i>
               </a>
             )}
           </div>
         </div>
 
-     <div className={styles.info}>
- 
-  <ul className={styles.otherList}>
-    {/* Shipping Information */}
-    <p>
-      <b>Shipping:</b>{" "}
-      {otherInfo?.shippingInformation
-        ? otherInfo.shippingInformation
-        : "We deliver to your location. Contact us for details."}
-    </p>
+        <div className={styles.info}>
+          <ul className={styles.otherList}>
+            {/* Shipping Information */}
+            <p>
+              <b>
+                <i className="fa-solid fa-truck-fast"></i>
+              </b>{" "}
+              {otherInfo?.shippingInformation
+                ? otherInfo.shippingInformation
+                : "We deliver to your location. Contact us for details."}
+            </p>
 
-    {/* Opening Hours */}
-    <p>
-      <b>Opening Hours:</b>{" "}
-      {otherInfo?.openingHours
-        ? otherInfo.openingHours.from === "00:00" &&
-          otherInfo.openingHours.to === "00:00"
-          ? "Open 24 hours"
-          : `${otherInfo.openingHours.from} - ${otherInfo.openingHours.to}`
-        : "open 24 hours"}
-    </p>
-  </ul>
-</div>
-
+            {/* Opening Hours */}
+            <p>
+              <b>
+                <i className="fa-solid fa-clock"></i>
+              </b>{" "}
+              {otherInfo?.openingHours
+                ? otherInfo.openingHours.from === "00:00" &&
+                  otherInfo.openingHours.to === "00:00"
+                  ? "Open 24 hours"
+                  : `${otherInfo.openingHours.from} - ${otherInfo.openingHours.to}`
+                : "Open 24 hours"}
+            </p>
+          </ul>
+        </div>
       </div>
 
       {/* Bottom Section */}
       <div className={styles.bottomNote}>
         <p>
-          &copy; {new Date().getFullYear()} {businessName}. All rights reserved
+          &copy; {new Date().getFullYear()} {businessName}. All rights reserved.
         </p>
       </div>
     </footer>
