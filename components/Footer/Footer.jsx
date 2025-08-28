@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { db } from "../../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import styles from "./Footer.module.css";
+import FooterAd from "../footerAd/footerAd";
+
 
 const Footer = ({ storeId }) => {
   const [business, setBusiness] = useState(null);
@@ -40,7 +42,11 @@ const Footer = ({ storeId }) => {
 
   return (
     <footer className={styles.footer}>
-      {/* Top Section */}
+      
+      <div className={styles.adSection}>
+         <FooterAd />
+      </div>  
+      
       <div className={styles.topSection}>
         <div className={styles.about}>
           <h3>{businessName || "Our Store"}</h3>

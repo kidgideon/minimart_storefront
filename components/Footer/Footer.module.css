@@ -9,6 +9,14 @@
   gap: 20px;
 }
 
+.adSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .topSection {
    width: 95%;
    display: flex;
