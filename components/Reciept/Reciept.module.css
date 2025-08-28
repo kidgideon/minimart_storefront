@@ -247,9 +247,9 @@
 }
 
 .watermark img {
-  max-width: 150px;
-  height: auto;
-  margin-bottom: 10px;
+  width: 150px;
+  height: 150px;
+  border-radius: 100px;
 }
 
 .watermark p {

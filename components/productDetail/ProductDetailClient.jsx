@@ -113,18 +113,26 @@ export default function ProductDetailClient({ storeId, product, biz }) {
     dispatchCartUpdate();
   };
 
-  const handleNativeShare = async () => {
-    if (!navigator.share) return alert("Native share not supported");
+const  handleNativeShare = async () => {
+  // Ensure the full product URL
+  const shareUrl = `https://${storeId}.minimart.ng/product/${product.prodId || product.serviceId}`;
 
-    try {
+  try {
+    if (navigator.share) {
       await navigator.share({
-        url: window.location.href,
+        url: shareUrl,
       });
-    } catch (err) {
-      console.error("Share failed:", err);
-      alert("Share failed: " + err.message);
+    } else {
+      await navigator.clipboard.writeText(shareUrl);
+      alert("Link copied to clipboard!");
     }
-  };
+  } catch (err) {
+    console.error("Share failed:", err);
+    if (err.name !== "AbortError") {
+      alert("Unable to share this product.");
+    }
+  }
+};
 
   return (
     <div className={styles.top}>

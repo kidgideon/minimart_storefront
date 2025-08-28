@@ -51,11 +51,11 @@ const Banner = ({ storeId }) => {
   const getAlignment = () => {
     switch (bannerData?.align) {
       case "center":
-        return { left: "50%", transform: "translate(-50%, -50%)", textAlign: "center" };
+        return { left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", width: "100%"};
       case "right":
-        return { right: "5%", transform: "translateY(-50%)", textAlign: "right" };
+        return { right: "5%", transform: "translateY(-50%)", textAlign: "right", width: "100%" };
       default:
-        return { left: "5%", transform: "translateY(-50%)", textAlign: "left" };
+        return { left: "5%", transform: "translateY(-50%)", textAlign: "left", width: "100%" };
     }
   };
 
