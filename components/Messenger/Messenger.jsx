@@ -12,60 +12,68 @@ const Messenger = ({ storeId }) => {
   // Fetch business platforms
   useEffect(() => {
     if (!storeId) return;
+
     const fetchBusiness = async () => {
       try {
         const docSnap = await getDoc(doc(db, "businesses", storeId));
-        if (docSnap.exists()) setBusiness(docSnap.data());
+        if (docSnap.exists()) {
+          setBusiness(docSnap.data());
+        }
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching business:", err);
       }
     };
+
     fetchBusiness();
   }, [storeId]);
 
   if (!business) return null;
 
-  // Generate available platforms
+  // Generate available platforms safely
   const platforms = [];
-  if (business.whatsappNumber)
+
+  if (business.whatsappNumber?.replace) {
     platforms.push({
       name: "WhatsApp",
       url: `https://wa.me/${business.whatsappNumber.replace(/\D/g, "")}`,
       icon: "fa-brands fa-whatsapp",
     });
-  if (business.instagramLink)
+  }
+
+  if (business.instagramLink?.trim()) {
     platforms.push({
       name: "Instagram",
       url: business.instagramLink,
       icon: "fa-brands fa-instagram",
     });
-  if (business.facebookLink)
+  }
+
+  if (business.facebookLink?.trim()) {
     platforms.push({
       name: "Facebook",
       url: business.facebookLink,
       icon: "fa-brands fa-facebook",
     });
-  if (business.tikTokLink)
+  }
+
+  if (business.tiktokLink?.trim()) {
     platforms.push({
       name: "TikTok",
-      url: business.tikTokLink,
+      url: business.tiktokLink,
       icon: "fa-brands fa-tiktok",
     });
-  if (business.youtubeLink)
-    platforms.push({
-      name: "YouTube",
-      url: business.youtubeLink,
-      icon: "fa-brands fa-youtube",
-    });
+  }
 
-  if (platforms.length === 0) return null; // no platforms to show
+  // YouTube intentionally removed
+
+  if (!platforms.length) return null;
 
   return (
     <div className={styles.messengerContainer}>
       {/* Floating main icon */}
       <div
         className={`${styles.mainButton} ${open ? styles.open : ""}`}
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((prev) => !prev)}
       >
         <i className="fa-solid fa-comment"></i>
       </div>
@@ -73,14 +81,16 @@ const Messenger = ({ storeId }) => {
       {/* Platform buttons */}
       {platforms.map((p, i) => (
         <a
-          key={p.name}
+          key={p.name || `platform-${i}`}
           href={p.url}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           className={`${styles.platformButton} ${open ? styles.show : ""}`}
           style={{
-            transform: `translate(-${(i + 1) * 60}px, 0)`, // horizontal offset
-            transitionDelay: `${i * 50}ms`, // staggered animation
+            transform: open
+              ? `translate(-${(i + 1) * 70}px, 0)`
+              : "translate(0, 0)",
+            transitionDelay: `${i * 100}ms`,
           }}
         >
           <i className={p.icon}></i>

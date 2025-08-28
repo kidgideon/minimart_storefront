@@ -134,8 +134,7 @@ export default function ProductCard({ storeId, item }) {
 
   const handleShare = async () => {
     // Build a share URL that matches your Next.js route structure
-    const base = typeof window !== "undefined" ? window.location.origin : "https://minimart.ng";
-    const shareUrl = `${base}/product/${id}`;
+    const shareUrl = `/product/${id}`;
 
     try {
       if (navigator.share) {

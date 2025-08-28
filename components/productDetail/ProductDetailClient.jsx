@@ -118,8 +118,6 @@ export default function ProductDetailClient({ storeId, product, biz }) {
 
     try {
       await navigator.share({
-        title: product.name,
-        text: `Check out this ${product._ft} on Minimart: ${window.location.href}`,
         url: window.location.href,
       });
     } catch (err) {
