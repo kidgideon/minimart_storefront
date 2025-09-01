@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { doc, onSnapshot, updateDoc, getDoc, increment } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import Image from "next/image";
 import defaultLogo from "../../public/images/no_bg.png";
@@ -127,7 +127,7 @@ export default function Navbar({ storeId }) {
     return () => clearTimeout(t);
   }, [cartCount]);
 
-  // Track daily page views safely using keyed increment
+  // Track daily page views using array structure
   useEffect(() => {
     if (!storeId || typeof window === "undefined") return;
 
@@ -141,11 +141,29 @@ export default function Navbar({ storeId }) {
     const updatePageViews = async () => {
       try {
         const bizRef = doc(db, "businesses", storeId);
+        const snap = await getDoc(bizRef);
+        if (!snap.exists()) return;
 
-        // Use increment per day key
-        const updateObj = { [`pageViews.${todayKey}`]: increment(1) };
-        await updateDoc(bizRef, updateObj);
+        const data = snap.data();
+        let viewsArr = Array.isArray(data.pageViews) ? [...data.pageViews] : [];
 
+        const existingIndex = viewsArr.findIndex((v) =>
+          v.date.startsWith(todayKey)
+        );
+
+        if (existingIndex !== -1) {
+          viewsArr[existingIndex] = {
+            ...viewsArr[existingIndex],
+            views: (viewsArr[existingIndex].views || 0) + 1,
+          };
+        } else {
+          viewsArr.push({
+            date: `${todayKey}T00:00:00+01:00`,
+            views: 1,
+          });
+        }
+
+        await updateDoc(bizRef, { pageViews: viewsArr });
         localStorage.setItem(localVisitKey, todayKey);
       } catch (err) {
         console.error("Error updating page views:", err);
