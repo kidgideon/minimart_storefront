@@ -172,10 +172,9 @@ export default function ProductDetailClient({ storeId, product, biz }) {
       <div className={styles.right}>
         <h2 className={styles.name}>{product.name}</h2>
         <p className={styles.price}>₦{(product.price || 0).toLocaleString()}</p>
-        <p className={styles.desc}>{product.description}</p>
+        <p style={{textAlign: "center"}} className={styles.desc}>{product.description}</p>
         <p className={styles.category}>{product.category}</p>
-        <p className={styles.views}>Views: {views}</p>
-
+    
         <div className={styles.cart}>
           {quantity > 0 ? (
             <>
