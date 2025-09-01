@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { doc, onSnapshot, updateDoc, getDoc, Timestamp } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, getDoc, increment } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import Image from "next/image";
 import defaultLogo from "../../public/images/no_bg.png";
@@ -127,50 +127,25 @@ export default function Navbar({ storeId }) {
     return () => clearTimeout(t);
   }, [cartCount]);
 
-  // Track daily page views using Firestore Timestamps
+  // Track daily page views safely using keyed increment
   useEffect(() => {
     if (!storeId || typeof window === "undefined") return;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayKey = today.toISOString().split("T")[0];
-    const lastVisited = localStorage.getItem(localVisitKey);
+    const todayKey = today.toISOString().split("T")[0]; // YYYY-MM-DD
 
+    const lastVisited = localStorage.getItem(localVisitKey);
     if (lastVisited === todayKey) return;
 
     const updatePageViews = async () => {
       try {
         const bizRef = doc(db, "businesses", storeId);
-        const snap = await getDoc(bizRef);
-        if (!snap.exists()) return;
 
-        const data = snap.data();
-        const pageViews = data.pageViews || [];
+        // Use increment per day key
+        const updateObj = { [`pageViews.${todayKey}`]: increment(1) };
+        await updateDoc(bizRef, updateObj);
 
-        const todayIndex = pageViews.findIndex((entry) => {
-          if (!entry.date) return false;
-          let entryDate;
-          if (entry.date.toDate) {
-            // Firestore Timestamp
-            entryDate = entry.date.toDate();
-          } else {
-            // Fallback if plain string
-            entryDate = new Date(entry.date);
-          }
-          entryDate.setHours(0, 0, 0, 0);
-          return entryDate.getTime() === today.getTime();
-        });
-
-        if (todayIndex >= 0) {
-          pageViews[todayIndex].views = (pageViews[todayIndex].views || 0) + 1;
-        } else {
-          pageViews.push({
-            views: 1,
-            date: Timestamp.now(),
-          });
-        }
-
-        await updateDoc(bizRef, { pageViews });
         localStorage.setItem(localVisitKey, todayKey);
       } catch (err) {
         console.error("Error updating page views:", err);

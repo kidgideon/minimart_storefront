@@ -136,6 +136,10 @@ export default function CartClient({ storeId }) {
     );
   }
 
+  const truncate = (str = "", n = 100) => 
+  str.length > n ? str.slice(0, n).trimEnd() + "..." : str;
+
+
   if (!biz) return null;
 
   return (
@@ -161,7 +165,6 @@ export default function CartClient({ storeId }) {
                     <div className={styles.itemInfo}>
                       <div className={styles.itemDetails}>
                         <div className={styles.itemName}>{item.name || "Unnamed Item"}</div>
-                        <div className={styles.itemDescription}>{item.description || ""}</div>
                         <div className={styles.itemCategory}>{item.category || ""}</div>
                       </div>
                     </div>
