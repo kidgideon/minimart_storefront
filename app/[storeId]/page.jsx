@@ -46,7 +46,7 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `${biz.businessName || "Store"} | Minimart`,
-    description: biz.description || "Shop amazing products and services",
+    description: ` ${biz.description || "Shop amazing products and services"}`,
     metadataBase: new URL("https://minimart.ng"),
     icons: {
       icon: logo,
