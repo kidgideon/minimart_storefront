@@ -18,11 +18,10 @@ function useLocalCartCount(storeId) {
       const raw = localStorage.getItem(storageKey);
       if (!raw) return 0;
       const obj = JSON.parse(raw);
-      if (obj && typeof obj === "object") {
-        return Object.values(obj).reduce((sum, qty) => sum + qty, 0);
-      }
-    } catch {}
-    return 0;
+      return Object.values(obj).reduce((sum, qty) => sum + qty, 0);
+    } catch {
+      return 0;
+    }
   };
 
   const [count, setCount] = useState(0);
@@ -69,7 +68,6 @@ export default function Navbar({ storeId }) {
   const localLikeKey = `liked_store_${storeId}`;
   const localVisitKey = `lastVisited_${storeId}`;
 
-  // Fetch business data
   useEffect(() => {
     if (!storeId) return;
     setLoadingBiz(true);
@@ -88,7 +86,6 @@ export default function Navbar({ storeId }) {
     return () => unsub();
   }, [storeId]);
 
-  // Track likes
   useEffect(() => {
     if (typeof window !== "undefined" && localStorage.getItem(localLikeKey)) {
       setLikedStore(true);
@@ -118,7 +115,6 @@ export default function Navbar({ storeId }) {
     }
   };
 
-  // Animate cart badge
   useEffect(() => {
     if (cartCount <= 0) return;
     setBadgeKey((prev) => prev + 1);
@@ -127,16 +123,14 @@ export default function Navbar({ storeId }) {
     return () => clearTimeout(t);
   }, [cartCount]);
 
-  // Track daily page views using array structure
+  // Track daily page views using only the date (no time)
   useEffect(() => {
     if (!storeId || typeof window === "undefined") return;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayKey = today.toISOString().split("T")[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
     const lastVisited = localStorage.getItem(localVisitKey);
-    if (lastVisited === todayKey) return;
+    if (lastVisited === today) return;
 
     const updatePageViews = async () => {
       try {
@@ -147,9 +141,7 @@ export default function Navbar({ storeId }) {
         const data = snap.data();
         let viewsArr = Array.isArray(data.pageViews) ? [...data.pageViews] : [];
 
-        const existingIndex = viewsArr.findIndex((v) =>
-          v.date.startsWith(todayKey)
-        );
+        const existingIndex = viewsArr.findIndex((v) => v.date === today);
 
         if (existingIndex !== -1) {
           viewsArr[existingIndex] = {
@@ -158,13 +150,13 @@ export default function Navbar({ storeId }) {
           };
         } else {
           viewsArr.push({
-            date: `${todayKey}T00:00:00+01:00`,
+            date: today,
             views: 1,
           });
         }
 
         await updateDoc(bizRef, { pageViews: viewsArr });
-        localStorage.setItem(localVisitKey, todayKey);
+        localStorage.setItem(localVisitKey, today);
       } catch (err) {
         console.error("Error updating page views:", err);
       }
