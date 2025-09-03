@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./Featured.module.css";
-import { db } from "../../lib/firebase"; // adjust if path differs in your Next.js structure
+import { db } from "../../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import ProductCard from "../productCard/productCard";
 
@@ -15,7 +15,6 @@ const Featured = ({ storeId }) => {
 
     const load = async () => {
       try {
-        // Fetch business data
         const snap = await getDoc(doc(db, "businesses", storeId));
         if (!snap.exists()) return;
 
@@ -42,12 +41,11 @@ const Featured = ({ storeId }) => {
 
         setItems(arr);
 
-        // Load cart from localStorage safely (client-side only)
-        const storedCart =
-          typeof window !== "undefined"
-            ? JSON.parse(localStorage.getItem(`cart_${storeId}`)) || {}
-            : {};
-        setCart(storedCart);
+        if (typeof window !== "undefined") {
+          const storedCart =
+            JSON.parse(localStorage.getItem(`cart_${storeId}`)) || {};
+          setCart(storedCart);
+        }
       } catch (error) {
         console.error("Error loading featured items:", error);
       }
@@ -63,18 +61,17 @@ const Featured = ({ storeId }) => {
     setCart(updatedCart);
   };
 
+  // If there are no featured items, render nothing at all
+  if (!items.length) return null;
+
   const featuredType =
-    items.length && items.every((it) => it._ft === "service")
-      ? "Services"
-      : "Products";
+    items.every((it) => it._ft === "service") ? "Services" : "Products";
 
   return (
     <div className={styles.featured}>
-      {items.length > 0 && (
-        <div className={styles.Intro}>
-          <p className={styles.introText}>Featured {featuredType}</p>
-        </div>
-      )}
+      <div className={styles.Intro}>
+        <p className={styles.introText}>Featured {featuredType}</p>
+      </div>
       <div className={styles.slidableArea}>
         {items.map((item) => {
           const itemId =

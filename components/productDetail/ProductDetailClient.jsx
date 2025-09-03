@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import styles from "./productDetail.module.css"; // your styles
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useEffect, useState, useRef } from "react";
+import styles from "./productDetail.module.css";
+import { doc, getDoc, updateDoc , runTransaction} from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { v4 as uuidv4 } from "uuid";
 import ProductCard from "../../components/productCard/productCard";
@@ -16,6 +16,9 @@ export default function ProductDetailClient({ storeId, product, biz }) {
   const cartKey = `cart_${storeId}`;
   const localLikeKey = `${product._ft}_${product.prodId || product.serviceId}`;
 
+  // Prevent duplicate view increment in Strict Mode
+  const didIncrementRef = useRef(false);
+
   // Initialize quantity
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem(cartKey)) || {};
@@ -23,7 +26,7 @@ export default function ProductDetailClient({ storeId, product, biz }) {
     setQuantity(cart[itemId] || 0);
   }, [cartKey, product]);
 
-  // Similar products & likes
+  // Similar products & like initialization
   useEffect(() => {
     if (!product || !biz) return;
 
@@ -41,37 +44,46 @@ export default function ProductDetailClient({ storeId, product, biz }) {
     }
   }, [product, biz, localLikeKey]);
 
-  // Increment views
-  useEffect(() => {
-    if (!storeId || !product) return;
+  // Increment views directly inside product/service object
+// Increment views directly inside product/service object
+useEffect(() => {
+  if (!storeId || !product) return;
+  if (didIncrementRef.current) return;
+  didIncrementRef.current = true;
 
-    const incrementViews = async () => {
-      try {
-        const bizRef = doc(db, "businesses", storeId);
-        const snap = await getDoc(bizRef);
+  const incrementViews = async () => {
+    try {
+      const bizRef = doc(db, "businesses", storeId);
+      const key = product._ft === "product" ? "products" : "services";
+      const idKey = key === "products" ? "prodId" : "serviceId";
+      const pid = product.prodId || product.serviceId;
+
+      // Use Firestore transaction to prevent overwriting
+      await runTransaction(db, async (transaction) => {
+        const snap = await transaction.get(bizRef);
+        if (!snap.exists()) return;
+
         const data = snap.data();
-        if (!data) return;
-
-        const key = product._ft === "product" ? "products" : "services";
-        const idKey = key === "products" ? "prodId" : "serviceId";
-
         const arr = data[key] || [];
-        const index = arr.findIndex(p => p[idKey] === (product.prodId || product.serviceId));
+        const index = arr.findIndex(p => p[idKey] === pid);
         if (index === -1) return;
 
-        // Increment locally
-        arr[index].views = (arr[index].views || 0) + 1;
-        setViews(arr[index].views);
+        // Create or increment views field
+        const currentViews = arr[index].views || 0;
+        arr[index] = { ...arr[index], views: currentViews + 1 };
 
-        // Persist to Firestore
-        await updateDoc(bizRef, { [key]: arr });
-      } catch (err) {
-        console.error("Failed to increment views:", err);
-      }
-    };
+        transaction.update(bizRef, { [key]: arr });
+      });
 
-    incrementViews();
-  }, [storeId, product]);
+      setViews(v => (v || 0) + 1);
+    } catch (err) {
+      console.error("Failed to increment views:", err);
+    }
+  };
+
+  incrementViews();
+}, [storeId, product]);
+
 
   const dispatchCartUpdate = () => {
     window.dispatchEvent(new CustomEvent("cartUpdated", { detail: storeId }));
@@ -116,8 +128,11 @@ export default function ProductDetailClient({ storeId, product, biz }) {
     localStorage.setItem("cartId", cartId);
 
     let analysis = JSON.parse(localStorage.getItem("cartAnalysis")) || {};
-    if (!analysis[cartId]) analysis[cartId] = { open: true, closed: false, products: [itemId] };
-    else if (!analysis[cartId].products.includes(itemId)) analysis[cartId].products.push(itemId);
+    if (!analysis[cartId]) {
+      analysis[cartId] = { open: true, closed: false, products: [itemId] };
+    } else if (!analysis[cartId].products.includes(itemId)) {
+      analysis[cartId].products.push(itemId);
+    }
     localStorage.setItem("cartAnalysis", JSON.stringify(analysis));
 
     setQuantity(cart[itemId]);
@@ -132,8 +147,11 @@ export default function ProductDetailClient({ storeId, product, biz }) {
     if (cart[itemId] <= 1) delete cart[itemId];
     else cart[itemId] -= 1;
 
-    if (Object.keys(cart).length === 0) localStorage.removeItem(cartKey);
-    else localStorage.setItem(cartKey, JSON.stringify(cart));
+    if (Object.keys(cart).length === 0) {
+      localStorage.removeItem(cartKey);
+    } else {
+      localStorage.setItem(cartKey, JSON.stringify(cart));
+    }
 
     setQuantity(cart[itemId] || 0);
     dispatchCartUpdate();
@@ -142,8 +160,9 @@ export default function ProductDetailClient({ storeId, product, biz }) {
   const handleNativeShare = async () => {
     const shareUrl = `https://${storeId}.minimart.ng/product/${product.prodId || product.serviceId}`;
     try {
-      if (navigator.share) await navigator.share({ url: shareUrl });
-      else {
+      if (navigator.share) {
+        await navigator.share({ url: shareUrl });
+      } else {
         await navigator.clipboard.writeText(shareUrl);
         alert("Link copied to clipboard!");
       }
@@ -172,9 +191,8 @@ export default function ProductDetailClient({ storeId, product, biz }) {
       <div className={styles.right}>
         <h2 className={styles.name}>{product.name}</h2>
         <p className={styles.price}>₦{(product.price || 0).toLocaleString()}</p>
-        <p style={{textAlign: "center"}} className={styles.desc}>{product.description}</p>
+        <p className={styles.desc}>{product.description}</p>
         <p className={styles.category}>{product.category}</p>
-    
         <div className={styles.cart}>
           {quantity > 0 ? (
             <>
