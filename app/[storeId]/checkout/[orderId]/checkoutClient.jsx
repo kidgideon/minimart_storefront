@@ -80,6 +80,7 @@ export default function CheckoutClient({ storeId, orderId}) {
     return true;
   };
 
+  
   const handlePaystackPayment = async () => {
     if (!validateAll()) return;
     setIsSubmitting(true);
@@ -97,6 +98,8 @@ export default function CheckoutClient({ storeId, orderId}) {
       })
     );
 
+    
+   
     try {
       const paymentData = {
         email,
