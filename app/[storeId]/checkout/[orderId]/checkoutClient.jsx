@@ -79,42 +79,40 @@ export default function CheckoutClient({ storeId, orderId}) {
     }
     return true;
   };
+const handlePaystackPayment = async () => {
+  if (!validateAll()) return;
+  setIsSubmitting(true);
 
-  
-  const handlePaystackPayment = async () => {
-    if (!validateAll()) return;
-    setIsSubmitting(true);
+  // Save customer & shipping info to localStorage
+  localStorage.setItem(
+    `checkout_info_${storeId}`,
+    JSON.stringify({
+      firstName,
+      lastName,
+      email,
+      whatsapp: formatWhatsapp(whatsapp),
+      state,
+      street,
+    })
+  );
 
-    // Save customer & shipping info to localStorage
-    localStorage.setItem(
-      `checkout_info_${storeId}`,
-      JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        whatsapp: formatWhatsapp(whatsapp),
-        state,
-        street,
-      })
-    );
+  try {
+    const paymentData = {
+      email,
+      amount: totalAmount * 100, // Paystack expects kobo
+      split_code: biz?.splitCode, // <-- changed from subAccount.subaccount_code
+      reference: orderId,
+      callback_url: `${window.location.origin}/order/${orderId}`,
+    };
 
-    
-   
-    try {
-      const paymentData = {
-        email,
-        amount: totalAmount * 100, // Paystack expects kobo
-        subaccount_code: biz?.subAccount?.subaccount_code,
-        reference: orderId,
-        callback_url: `${window.location.origin}/order/${orderId}`,
-      };
-      const payRes = await payToSubAccount(paymentData);
-      window.location.href = payRes.authorization_url; // Redirect to Paystack
-    } catch (err) {
-      toast.error("Failed to initialize payment");
-      setIsSubmitting(false);
-    }
-  };
+    const payRes = await payWithSplitCode(paymentData);
+    window.location.href = payRes.authorization_url; // Redirect to Paystack
+  } catch (err) {
+    toast.error("Failed to initialize payment");
+    setIsSubmitting(false);
+  }
+};
+
 
   if (loading) {
     return (

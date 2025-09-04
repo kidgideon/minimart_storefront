@@ -29,19 +29,16 @@ export async function createSubAccount({ businessName, accNo, bankCode, accName 
   return data.data;
 }
 
-// Initialize payment to subaccount
-export async function payToSubAccount({ email, amount, subaccount_code, reference, callback_url }) {
- 
-  const subaccount = subaccount_code;
-  console.log(subaccount_code)
+// Initialize payment with split code
+export async function payWithSplitCode({ email, amount, split_code, reference, callback_url }) {
   const res = await fetch(`${BASE_URL}/pay`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, amount, subaccount, reference, callback_url }),
+    body: JSON.stringify({ email, amount, split_code, reference, callback_url }),
   });
+
   const data = await res.json();
   if (!data.status) throw new Error("Failed to initialize payment");
   return data.data; // Contains authorization_url, access_code, reference, etc.
 }
-
 
