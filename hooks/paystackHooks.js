@@ -4,7 +4,7 @@ const test_url = "http://localhost:3400/api/paystack"
 
 // Initialize payment with split code
 export async function payWithSplitCode({ email, amount, split_code, reference, callback_url }) {
-  const res = await fetch(`${test_url}/pay`, {
+  const res = await fetch(`${BASE_URL}/pay`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, amount, split_code, reference, callback_url }),
