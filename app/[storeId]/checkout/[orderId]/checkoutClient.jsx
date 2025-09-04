@@ -7,7 +7,7 @@ import Messenger from "../../../../components/Messenger/Messenger";
 import Footer from "../../../../components/Footer/Footer";
 import styles from "./page.module.css";
 import useStoreTheme from "../../../../hooks/useStoreTheme";
-import { payToSubAccount } from "../../../../hooks/paystackHooks";
+import { payWithSplitCode } from "../../../../hooks/paystackHooks";
 
 const NIGERIAN_STATES = [
   "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
@@ -82,6 +82,8 @@ export default function CheckoutClient({ storeId, orderId}) {
 const handlePaystackPayment = async () => {
   if (!validateAll()) return;
   setIsSubmitting(true);
+
+  console.log(biz.splitCode)
 
   // Save customer & shipping info to localStorage
   localStorage.setItem(
