@@ -20,9 +20,23 @@
 .companyArea {
   display: flex;
   align-items: center;
+  justify-content: start;
+  flex-direction: row;
   gap: 8px;
-  flex: 1;
-  min-width: 0;
+  width: 100%;
+}
+
+.cart {
+  margin-right: 5px;
+}
+
+.cartArea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 50%;
+  flex-direction: row;
+  justify-content: end;
 }
 
 .imageDiv {
@@ -51,17 +65,13 @@
 
 .storeName {
   font-weight: 600;
+  font-size: 95%;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.cartArea {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
 
 .heart,
 .cart {
@@ -74,10 +84,6 @@
 .heart i,
 .cart i {
   font-size: 1.3rem;
-}
-
-.cart {
-  margin-right: 20px;
 }
 
 .cartArea {
