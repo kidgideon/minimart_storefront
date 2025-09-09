@@ -8,10 +8,26 @@ import shopper from "../../public/images/shoppers.svg";
 
 export default function HowItWorks() {
   const steps = [
-    { img: signup, title: "Sign Up", text: "Create your free Minimart account in less than a minute." },
-    { img: list, title: "Add Products & Services", text: "Upload items, set prices, and organize your storefront." },
-    { img: order, title: "Enable Secure Payments", text: "Connect your bank to start receiving instant payments." },
-    { img: shopper, title: "Share & Start Selling", text: "Promote your store link across WhatsApp, Instagram, and other platforms." }
+    {
+      img: signup,
+      title: "Sign Up",
+      text: "Create your free Minimart account in less than a minute."
+    },
+    {
+      img: list,
+      title: "Add Products & Services",
+      text: "Upload items, set prices, and organize your storefront."
+    },
+    {
+      img: order,
+      title: "Enable Secure Payments",
+      text: "Connect your bank to start receiving instant payments."
+    },
+    {
+      img: shopper,
+      title: "Share & Start Selling",
+      text: "Promote your store link across WhatsApp, Instagram, and other platforms."
+    }
   ];
 
   return (
@@ -37,7 +53,6 @@ export default function HowItWorks() {
         ))}
       </ol>
 
-      {/* Structured Data for How-To Schema */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

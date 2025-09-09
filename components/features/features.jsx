@@ -13,33 +13,33 @@ export default function Features() {
     {
       img: customization,
       title: "Custom Branding",
-      text: "Design your Minimart storefront with your own colors, logo, and promotional banners."
+      text: "Design your Minimart storefront with your own colors, logo, and promotional banners.",
     },
     {
       img: payment,
       title: "Instant Payments",
-      text: "Receive secure payments instantly with branded digital receipts for your customers."
+      text: "Receive secure payments instantly with branded digital receipts for your customers.",
     },
     {
       img: products,
       title: "Products & Services",
-      text: "Sell both physical products and services in one seamless Minimart storefront."
+      text: "Sell both physical products and services in one seamless Minimart storefront.",
     },
     {
       img: analytics,
       title: "Analytics Dashboard",
-      text: "Track store views, customer engagement, and sales to grow smarter."
+      text: "Track store views, customer engagement, and sales to grow smarter.",
     },
     {
       img: mobile,
       title: "Mobile Ready",
-      text: "Optimized for smartphones, tablets, and desktops for maximum reach."
+      text: "Optimized for smartphones, tablets, and desktops for maximum reach.",
     },
     {
       img: secure,
       title: "Secure Platform",
-      text: "Enterprise-grade security keeps your data and your customers safe."
-    }
+      text: "Enterprise-grade security keeps your data and your customers safe.",
+    },
   ];
 
   return (
@@ -48,16 +48,15 @@ export default function Features() {
       aria-label="Key features of Minimart"
     >
       <h2 className={styles.featuresTitle}>
-        Powerful Features to <span className={styles.coloredArea}>Grow Your Business with Minimart</span>
+        Powerful Features to{" "}
+        <span className={styles.coloredArea}>
+          Grow Your Business with Minimart
+        </span>
       </h2>
 
       <ul className={styles.featuresContainer}>
         {features.map((f, index) => (
-          <li
-            key={index}
-            className={`${styles.featureCard} fade-in`}
-            style={{ animationDelay: `${index * 0.15}s` }}
-          >
+          <li key={index} className={styles.featureCard}>
             <Image
               src={f.img}
               alt={`${f.title} feature in Minimart`}

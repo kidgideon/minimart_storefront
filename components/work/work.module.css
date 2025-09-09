@@ -1,7 +1,7 @@
 .worksSection {
   width: 100%;
-  padding: 100px 0px;
-  background: #ffffff; /* White for clean contrast */
+  padding: 100px 0;
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,8 +16,12 @@
   font-weight: 600;
 }
 
+.highlight {
+  color: #43B5F4;
+}
+
 .worksContainer {
-    width: 95%;
+  width: 95%;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
@@ -28,16 +32,10 @@
   flex: 1 1 260px;
   max-width: 300px;
   background: #fefefe;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   padding: 2rem 1.5rem;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.stepCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 .stepIcon {
@@ -56,15 +54,4 @@
 .stepText {
   font-size: 0.9rem;
   color: #555;
-}
-
-.stepCard {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.stepCard.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
