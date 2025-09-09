@@ -5,7 +5,7 @@ export function middleware(req) {
   const url = req.nextUrl.clone()
   const host = req.headers.get('host') || ''
 
-  // Skip middleware for Next.js system and API routes
+  // Skip middleware for Next.js internals and static files
   if (
     url.pathname.startsWith('/_next') ||
     url.pathname.startsWith('/api') ||
@@ -15,48 +15,54 @@ export function middleware(req) {
     return NextResponse.next()
   }
 
-  // Ignore main platform domains
-  const platformDomains = ['minimart.ng', 'www.minimart.ng']
+  // Domains to ignore (main platform + local dev)
+  const platformDomains = [
+    'minimart.ng',
+    'www.minimart.ng',
+    'localhost:3000',
+    '127.0.0.1:3000'
+  ]
   if (platformDomains.includes(host)) {
     return NextResponse.next()
   }
 
-  // Extract storeId from subdomain or custom domain
-  let storeId = ''
-  if (host.endsWith('.minimart.ng')) {
-    storeId = host.split('.')[0] // e.g., campusicon.minimart.ng → campusicon
-  } else {
-    // For custom domains
-    storeId = host.replace(/^www\./, '').split('.')[0] // e.g., jenniferglow.com → jenniferglow
+  // Handle store.minimart.ng → home
+  if (host === 'store.minimart.ng') {
+    url.pathname = '/'
+    return NextResponse.rewrite(url)
   }
 
-  if (!storeId) return NextResponse.next() // No rewrite if storeId missing
+  // Extract storeId
+  let storeId = ''
+  if (host.endsWith('.minimart.ng')) {
+    storeId = host.split('.')[0]
+  } else {
+    storeId = host.replace(/^www\./, '').split('.')[0]
+  }
 
-  // --- Root `/` → `/{storeId}` ---
+  if (!storeId) return NextResponse.next()
+
+  // Rewrite rules
   if (url.pathname === '/') {
     url.pathname = `/${storeId}`
     return NextResponse.rewrite(url)
   }
 
-  // --- Product page `/product/:id` → `/{storeId}/product/:id` ---
   if (url.pathname.startsWith('/product/')) {
     url.pathname = `/${storeId}${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // --- Cart page `/cart` → `/{storeId}/cart` ---
   if (url.pathname === '/cart') {
     url.pathname = `/${storeId}/cart`
     return NextResponse.rewrite(url)
   }
 
-  // --- Checkout page `/checkout/:orderId` → `/{storeId}/checkout/:orderId` ---
   if (url.pathname.startsWith('/checkout/')) {
     url.pathname = `/${storeId}${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // --- Order page `/order/:orderId` → `/{storeId}/order/:orderId` ---
   if (url.pathname.startsWith('/order/')) {
     url.pathname = `/${storeId}${url.pathname}`
     return NextResponse.rewrite(url)
