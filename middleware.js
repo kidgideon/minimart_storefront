@@ -1,4 +1,3 @@
-// middleware.js
 import { NextResponse } from 'next/server'
 
 export function middleware(req) {
@@ -15,6 +14,12 @@ export function middleware(req) {
     return NextResponse.next()
   }
 
+  // Handle store.minimart.ng first
+  if (host === 'store.minimart.ng') {
+    url.pathname = '/'
+    return NextResponse.rewrite(url)
+  }
+
   // Domains to ignore (main platform + local dev)
   const platformDomains = [
     'minimart.ng',
@@ -24,12 +29,6 @@ export function middleware(req) {
   ]
   if (platformDomains.includes(host)) {
     return NextResponse.next()
-  }
-
-  // Handle store.minimart.ng → home
-  if (host === 'store.minimart.ng') {
-    url.pathname = '/'
-    return NextResponse.rewrite(url)
   }
 
   // Extract storeId
