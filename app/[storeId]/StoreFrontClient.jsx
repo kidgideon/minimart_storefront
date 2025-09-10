@@ -14,6 +14,8 @@ const Footer = dynamic(() => import("../../components/Footer/Footer"), { ssr: fa
 const TrackOrder = dynamic(() => import("../../components/trackOrder/trackOrder"), { ssr: false });
 const Messenger = dynamic(() => import("../../components/Messenger/Messenger"), { ssr: false });
 
+const FooterAd = dynamic(() => import("../../components/footerAd/footerAd"), {ssr: false});
+
 export default function StorefrontClient({ storeId, biz, primary, secondary }) {
   return (
     <div
@@ -25,9 +27,11 @@ export default function StorefrontClient({ storeId, biz, primary, secondary }) {
       <Navbar storeId={storeId} />
       <Messenger storeId={storeId} />
       <Banner storeId={storeId} />
-       <TrackOrder storeId={storeId}/>
+      <FooterAd/>
+      <TrackOrder storeId={storeId}/>
       <Featured storeId={storeId} />
       <Latest storeId={storeId} />
+      <FooterAd/>
       <Products storeId={storeId} />
       <Services storeId={storeId} />
       <Footer storeId={storeId} />
